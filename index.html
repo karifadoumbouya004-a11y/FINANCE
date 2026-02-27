@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>mgs</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>mgs</h1>
+    <p class="tag">Une petite application en pur HTML/CSS/JS (sans Python)</p>
+  </header>
+
+  <main class="container">
+    <!-- NOUVEAU : Section d'authentification -->
+    <section class="auth-card" style="background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.03));border-radius:12px;padding:1rem;margin-bottom:1rem;">
+      <div id="auth-container" style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <button id="login-btn" style="padding:.5rem 1rem;border-radius:8px;background:#60a5fa;color:#04243a;border:none;cursor:pointer;">Se connecter avec Google</button>
+          <button id="logout-btn" style="padding:.5rem 1rem;border-radius:8px;background:#ef4444;color:white;border:none;cursor:pointer;display:none;">Déconnexion</button>
+        </div>
+        <div id="user-info" style="color:var(--muted);"></div>
+      </div>
+    </section>
+
+    <section class="todo-card">
+      <form id="todo-form" class="todo-form" autocomplete="off">
+        <input id="todo-input" placeholder="Ajouter une tâche..." required />
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <div class="controls">
+        <div class="filters">
+          <button data-filter="all" class="active">Toutes</button>
+          <button data-filter="active">Actives</button>
+          <button data-filter="completed">Terminées</button>
+        </div>
+        <button id="clear-completed" class="muted">Supprimer terminées</button>
+      </div>
+
+      <ul id="todo-list" class="todo-list" aria-live="polite"></ul>
+
+      <footer class="card-footer">
+        <span id="items-left">0 tâches</span>
+      </footer>
+    </section>
+
+    <section class="simulation-card">
+      <h2>Simulation de projet</h2>
+
+      <div class="sim-row">
+        <label for="sim-project">Projet</label>
+        <select id="sim-project"></select>
+      </div>
+
+      <form id="sim-form" class="sim-form" autocomplete="off">
+        <input id="sim-income" type="number" step="0.01" placeholder="Revenu projeté" required />
+        <input id="sim-expenses" type="number" step="0.01" placeholder="Dépenses projetées" required />
+        <input id="sim-duration" type="number" min="1" placeholder="Durée (mois)" required />
+        <button type="submit">Simuler</button>
+      </form>
+
+      <div id="sim-result" class="sim-result" aria-live="polite"></div>
+
+      <h3>Critères d'acceptation</h3>
+      <form id="criteria-form" class="criteria-form" autocomplete="off">
+        <input id="crit-minFunding" type="number" step="0.01" placeholder="Financement minimal requis" />
+        <input id="crit-minBalance" type="number" step="0.01" placeholder="Solde projeté minimal" />
+        <input id="crit-minROI" type="number" step="0.1" placeholder="ROI minimal (%)" />
+        <input id="crit-maxMemberDebt" type="number" step="0.01" placeholder="Dette max par membre" />
+        <input id="crit-requiredCaisse" placeholder="Caisse requise (optionnel)" />
+        <div class="criteria-actions">
+          <button type="button" id="save-criteria">Enregistrer critères</button>
+          <button type="button" id="eval-criteria">Évaluer le projet</button>
+        </div>
+      </form>
+
+      <div id="criteria-result" class="criteria-result" aria-live="polite"></div>
+    </section>
+    
+    <section class="expense-card">
+      <h2>Dépenses</h2>
+      <form id="expense-form" class="expense-form" autocomplete="off">
+        <input id="expense-desc" placeholder="Description..." required />
+        <input id="expense-amount" type="number" step="0.01" placeholder="Montant" required />
+        <select id="expense-type">
+          <option value="in">Entrée</option>
+          <option value="out">Sortie</option>
+        </select>
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <div class="expense-summary">
+        <div>Entrées: <strong id="sum-in">0.00</strong> €</div>
+        <div>Sorties: <strong id="sum-out">0.00</strong> €</div>
+        <div>Solde: <strong id="balance">0.00</strong> €</div>
+      </div>
+
+      <ul id="expense-list" class="expense-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="projects-card">
+      <h2>Projets</h2>
+      <form id="project-form" class="project-form" autocomplete="off">
+        <input id="project-name" placeholder="Nom du projet..." required />
+        <input id="project-caisse" placeholder="Caisse (ex: principale)..." />
+        <input id="project-amount" type="number" step="0.01" placeholder="Montant" required />
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <ul id="project-list" class="project-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="debts-card">
+      <h2>Dettes par membre</h2>
+      <form id="debt-form" class="debt-form" autocomplete="off">
+        <input id="member-name" placeholder="Nom du membre..." required />
+        <input id="member-rank" placeholder="Rang (ex: Président)..." />
+        <input id="debt-amount" type="number" step="0.01" placeholder="Montant dû" required />
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <div class="member-totals" id="member-totals"></div>
+      <ul id="debt-list" class="debt-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="contributions-card">
+      <h2>Cotisations des membres</h2>
+      <form id="contribution-form" class="contribution-form" autocomplete="off">
+        <input id="contribution-member" placeholder="Nom du membre..." required />
+        <input id="contribution-rank" placeholder="Rang (optionnel)" />
+        <input id="contribution-amount" type="number" step="0.01" placeholder="Montant cotisation" required />
+        <input id="contribution-period" placeholder="Période (ex: Janvier 2026)" />
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <div class="contribution-summary" id="contribution-summary"></div>
+      <ul id="contribution-list" class="contribution-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="sanctions-card">
+      <h2>Sanctions financières</h2>
+      <form id="sanction-form" class="sanction-form" autocomplete="off">
+        <input id="sanction-member" placeholder="Nom du membre..." required />
+        <input id="sanction-rank" placeholder="Rang (optionnel)" />
+        <input id="sanction-amount" type="number" step="0.01" placeholder="Montant sanction" required />
+        <input id="sanction-reason" placeholder="Motif (ex: retard)" />
+        <button type="submit">Ajouter</button>
+      </form>
+
+      <div class="sanction-totals" id="sanction-totals"></div>
+      <div class="sanction-actions">
+        <button id="export-sanctions-pdf">Exporter sanctions (PDF)</button>
+      </div>
+      <ul id="sanction-list" class="sanction-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="data-card">
+      <h2>Données (export / import)</h2>
+      <div class="data-actions">
+        <button id="export-data">Exporter JSON</button>
+        <button id="export-all-pdf">Exporter tout (PDF)</button>
+        <label class="import-label">Importer JSON
+          <input id="import-file" type="file" accept="application/json" style="display:none" />
+        </label>
+        <button id="clear-all" class="muted">Vider toutes les données</button>
+      </div>
+      <p class="note">L'import remplace les données actuelles après confirmation.</p>
+    </section>
+
+    <section class="log-card">
+      <h2>Flux (journal)</h2>
+      <div class="log-actions">
+        <input id="log-search" placeholder="Chercher..." style="flex:1;padding:.5rem .6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)" />
+        <button id="clear-logs" class="muted">Vider le journal</button>
+      </div>
+      <ul id="log-list" class="log-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="pdf-settings-card">
+      <h2>Paramètres PDF</h2>
+      <div class="pdf-form">
+        <input id="pdf-title" placeholder="Titre du rapport (ex: Rapport mgs)" />
+        <input id="pdf-logo-url" placeholder="URL du logo (optionnel)" />
+        <input id="pdf-subtitle" placeholder="Sous-titre (optionnel)" />
+        <select id="pdf-format">
+          <option value="A4">A4</option>
+          <option value="Letter">Lettre (USA)</option>
+        </select>
+        <button id="save-pdf-settings">Enregistrer paramètres</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- NOUVEAU : Ajouter Supabase avant app.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- NOUVEAU : Notre fichier de configuration -->
+  <script src="supabase-config.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
